@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +125,16 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.spotify.SpotifyOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+#Spotify Authentication
+SOCIAL_AUTH_SPOTIFY_KEY = 'f14faa95f781483da8d47a43edc9882b'
+SOCIAL_AUTH_SPOTIFY_SECRET = '9d732406270743ff97d5acf2300962cd'
+SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-follow-read']
+
+LOGIN_REDIRECT_URL = '/'
