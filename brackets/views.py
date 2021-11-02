@@ -18,3 +18,10 @@ def about(request):
         'abt': abt,
     }
     return render(request, 'brackets/about.html', context=context)
+
+def login(request):
+    log = Brackets.objects.filter()
+    context = {
+        'log': log,
+    }
+    return render(request, 'brackets/login.html', context=context)
