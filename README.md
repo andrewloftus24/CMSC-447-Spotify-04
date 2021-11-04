@@ -1,4 +1,4 @@
-# CMSC-447-Spotify-04 - Main Branch
+# CMSC-447-Spotify-04 - Develop Branch
 
 ## Changelog - 11/2/21
 
