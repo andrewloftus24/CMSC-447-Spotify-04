@@ -25,3 +25,9 @@ def login(request):
         'log': log,
     }
     return render(request, 'brackets/login.html', context=context)
+
+def make_bracket(request):
+    return render(request, 'brackets/make_bracket.html')
+
+def view_bracket(request):
+    return render(request, 'brackets/view_bracket.html')

@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="../../static/all.css"/>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Spotify Bracket Generator</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     {% include 'navbar/nav.html' %}
 </head>
 <body>
     <h1 class="display1 text-center">Welcome to the Spotify Bracket Generator!</h1>
+    <div class="text-center">
+        <a class="btn btn-primary" href="{% url 'Make_bracket' %}" role="button">Make your own Bracket</a>
+        <a class="btn btn-primary" href="{% url 'View_bracket' %}" role="button">View previously made Brackets</a>
+    </div>
 </body>
 </html>
