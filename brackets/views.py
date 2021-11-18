@@ -1,6 +1,15 @@
+<<<<<<< HEAD
+import random
+import string
+
+import django
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 import spotipy
+
 
 # Create your views here.
 from django.urls import reverse
@@ -30,6 +39,24 @@ def login(request):
         'log': log,
     }
     return render(request, 'brackets/login.html', context=context)
+
+
+def bracket(request, access_code=0):
+
+    return render(request, 'brackets/bracket.html', context=None)
+
+def generateOTT():
+    letters = string.ascii_letters
+    return ''.join(random.choice(letters) for i in range(10))
+
+def generateLink(request):
+    token = generateOTT()
+    ShareableLink.objects.create(shareCode=token)
+    return HttpResponse('<a href="/bracket/{}">{}{}</a>'.format(token, request.build_absolute_uri(), token))
+
+def logout(request):
+    django.contrib.auth.logout(request)
+    return redirect('/')
 
 
 def top50(request):
