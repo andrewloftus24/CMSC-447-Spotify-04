@@ -9,3 +9,4 @@ class Brackets(models.Model):
 class ShareableLink(models.Model):
     shareCode = models.CharField(max_length=10)
     time_to_expire = models.DateTimeField(auto_now_add=True, blank=True)
+    song_name = models.TextField();

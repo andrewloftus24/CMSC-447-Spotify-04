@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # CMSC-447-Spotify-04 - Andrew's Develop Branch
+=======
+# CMSC-447-Spotify-04 - Develop Branch
+>>>>>>> develop
 
 ## Changelog - 11/2/21
 

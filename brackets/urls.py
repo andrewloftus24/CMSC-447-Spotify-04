@@ -10,4 +10,5 @@ urlpatterns = [
     path('bracket/', views.bracket, name='bracket'),
     path('generateLink', views.generateLink, name="generateLink"),
     path('bracket/<str:token>/', views.bracket, name="bracket_shared"),
+    path('top50/', views.top50, name='top50')
 ]
