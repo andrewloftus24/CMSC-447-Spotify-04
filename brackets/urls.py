@@ -1,14 +1,17 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from . import views
 
 urlpatterns = [
-    path('login/', views.about, name='login'),
-    path('about/', views.about, name='about'),
+    path('login/', views.about),
+    path('about/', views.about),
     path('', include('django.contrib.auth.urls')),
-    path('logout/', views.logout, name='logout'),
-    path('', views.index, name='index'),
-    path('bracket/', views.bracket, name='bracket'),
-    path('generateLink', views.generateLink, name="generateLink"),
-    path('bracket/<str:token>/', views.bracket, name="bracket_shared"),
-    path('top50/', views.top50, name='top50')
+    path('logout/', views.logout),
+    path('', views.index),
+    path('bracket/', views.bracket),
+    path('bracket/<str:token>/', views.bracket),
+    re_path(r'^api/toptracks/', views.topTracks),
+    re_path(r'^api/getuser/', views.getUser),
+    path('join/', views.bracket),
+    path('create/', views.bracket),
+    path('room/<str:roomCode>', views.bracket)
 ]
