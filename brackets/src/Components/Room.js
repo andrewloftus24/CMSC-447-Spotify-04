@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import CreateRoom from './CreateRoom';
 import SingleElimination from './SingleElim';
+import GetCookie from './GetCookie';
 import { useHistory } from "react-router-dom";
 import { withRouter } from 'react-router';
 
+
 function Room(props){
-    let history = useHistory()
-    const roomCode = props.data.code;
-    const csrftoken = getCookie('csrftoken');
+    let history = useHistory();
+    console.log(props.match.params.roomCode);
+    const roomCode = props.match.params.roomCode;
+    const csrftoken = GetCookie('csrftoken');
     const [round, setRound] = useState(1);
-    const maxUsers = props.data.max_users;
-    const artist = props.data.artist;
-    const bracket_type = props.data.bracket_type;
+    const [maxUsers, setMaxUsers] = useState(0);
+    const [artist, setArtist] = useState("");
+    const [bracketType, setBracketType] = useState("");
     const [host, setHost] = useState('');
 
-     /*useEffect(() => {
+     function GetRoom(){
         fetch('/get-room/' + '?roomcode=' + roomCode)
         .then((response) => {
             if(!response.ok){
@@ -25,24 +28,13 @@ function Room(props){
         })
         .then((data) => {
             setHost(data.is_host);
+            setArtist(data.artist);
+            setMaxUsers(data.max_users);
+            setBracketType(data.bracket_type);
         });
-    }, [])*/
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
     }
+
+    GetRoom();
 
     const handleLeaveRoom = () => {
         const requestOptions = {

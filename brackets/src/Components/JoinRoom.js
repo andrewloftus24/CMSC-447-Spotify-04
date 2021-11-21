@@ -1,33 +1,20 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import GetCookie from './GetCookie';
 
 function JoinRoom(props){
-    const [roomCode, setRoomCode] = useState('');
+    const [roomCode, setRoomCode] = useState('0');
     const [error, setError] = useState('');
-    const csrftoken = getCookie('csrftoken');
+    const csrftoken = GetCookie('csrftoken');
 
-    const handleRoomCodeInput = (event) => {
-        setRoomCode(event.target.value)
-    }
+    useEffect(() => {
+        if(roomCode != '0'){
+            handleRoomJoinButton();
+        }
+    }, [roomCode])
 
     const handleRoomBackButton = (event) => {
         props.history.push('/bracket');
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
     }
 
     const handleRoomJoinButton = () => {
@@ -38,9 +25,7 @@ function JoinRoom(props){
                 code: roomCode
             }),
         };
-        fetch('/join-room/?' + new URLSearchParams({
-            code: roomCode
-        }))
+        fetch('/join-room/', requestOptions)
         .then((response) => {
             if (response.ok) {
                 props.history.push(`/room/${roomCode}`)
@@ -66,7 +51,7 @@ function JoinRoom(props){
             </div>
             <div class="row">
                 <div class="col-md-5 justify-content-md-right">
-                    <button type="button" class="btn btn-primary" onClick={handleRoomJoinButton}>Enter Room</button>
+                    <button type="button" class="btn btn-primary" onClick={() => setRoomCode(document.getElementById('roomCode').value)}>Enter Room</button>
                 </div>
                 <div class="col-md-2" />
                 <div class="col-md-5 justify-content-md-left">

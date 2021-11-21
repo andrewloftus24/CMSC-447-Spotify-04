@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
+import GetCookie from './GetCookie';
 import Room from './Room';
 
 function CreateRoom(props){
     let history = useHistory();
-    const csrftoken = getCookie('csrftoken');
+    const csrftoken = GetCookie('csrftoken');
     const [maxUsers, setMaxUsers] = useState(0);
     const [artist, setArtist] = useState("");
     const [bracketType, setBracketType] = useState("");
@@ -17,21 +18,7 @@ function CreateRoom(props){
         }
     }, [created])
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
+
 
     function Start(){
          const requestOptions = {
@@ -45,7 +32,7 @@ function CreateRoom(props){
       };
       fetch('/start-room/', requestOptions)
       .then((response) => response.json())
-      .then((data) => setData(data));
+      .then((data) => history.push('/room/' + data.code));
     }
 
     let optionsMenu = (
@@ -84,7 +71,7 @@ function CreateRoom(props){
 
     return (
         <div>
-            {created ? <Room data={data} /> : optionsMenu}
+            {optionsMenu}
         </div>
 
     )

@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 
 from api.models import Lobby
-from api.serializers import UpdateRoomSerializer, GetRoomSerializer, CreateRoomSerializer
+from api.serializers import GetRoomSerializer, CreateRoomSerializer
 
 
 class Room(generics.ListAPIView):
@@ -26,9 +26,9 @@ class GetRoom(APIView):
             match = Lobby.objects.filter(code=code)
             if len(match) > 0:
                 data = CreateRoomSerializer(match[0]).data
-                current_user = self.request.session.session_key
+                current_user = self.request.user.first_name
                 data['is_host'] = current_user == match[0].host
-                return HttpResponse(data, status=status.HTTP_200_OK)
+                return HttpResponse(JsonResponse(data), status=status.HTTP_200_OK)
             return HttpResponse({'Room Code Does Not Match With Open Room': 'Invalid Code'}, status=status.HTTP_404_NOT_FOUND)
         return HttpResponse({'Bad Request': 'Code is None'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -46,9 +46,6 @@ class JoinRoom(APIView):
             return HttpResponse({'Bad Request': 'Invalid Code'}, status=status.HTTP_400_BAD_REQUEST)
         return HttpResponse({'Bad Request': 'Code is None'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
 class CreateRoom(APIView):
     serializer_class = CreateRoomSerializer
 
@@ -61,7 +58,7 @@ class CreateRoom(APIView):
             bracket_type = r.data.get('bracket_type')
             max_users = r.data.get('max_users')
             artist = r.data.get('artist')
-            room_host = self.request.session.session_key
+            room_host = self.request.user.first_name
             match_info = Lobby.objects.filter(host=room_host)
             if match_info.exists():
                 match = match_info[0]
@@ -92,44 +89,13 @@ class LeaveRoom(APIView):
     def post(self, request, format=None):
         if 'room_code' in self.request.session:
             code = self.request.session.pop('room_code')
-            host_id = self.request.session.session_key
+            host_id = self.request.user.first_name
             room_results = Lobby.objects.filter(host=host_id)
             if len(room_results) > 0:
                 room = room_results[0]
                 room.delete()
 
         return HttpResponse({"Message": "You have left the room."}, status=status.HTTP_200_OK)
-
-
-class UpdateRoom(APIView):
-    serializer_class = UpdateRoomSerializer
-
-    def patch(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
-
-        r = self.serializer_class(data=request.data)
-        if r.is_valid():
-            bracket_type = r.data.get('bracket_type')
-            max_users = r.data.get('max_users')
-            artist = r.data.get('artist')
-            code = r.data.get('code')
-
-            match_info = Lobby.objects.filter(code=code)
-            if not match_info.exists():
-                return HttpResponse({'Message': 'Room does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-
-            match = match_info[0]
-            if match.host != self.request.session.session_key:
-                return HttpResponse({"Message": "You are not the host of this room."}, status=status.HTTP_403_FORBIDDEN)
-
-            match.bracket_type = bracket_type
-            match.max_users = max_users
-            match.artist = artist
-            match.save(update_fields=['guest_can_pause', 'votes_to_skip'])
-            return HttpResponse(GetRoomSerializer(match).data, status=status.HTTP_201_CREATED)
-
-        return HttpResponse({'Bad Request': "Data is not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 def sessionKey(request):
     return HttpResponse(request.session.session_key)

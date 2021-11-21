@@ -11,10 +11,3 @@ class CreateRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lobby
         fields = ['bracket_type', 'max_users', 'artist']
-
-class UpdateRoomSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(validators=[])
-
-    class Meta:
-        model = Lobby
-        fields = ['bracket_type', 'max_users', 'artist']
