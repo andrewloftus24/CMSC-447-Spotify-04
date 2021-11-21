@@ -6,18 +6,15 @@ import { withRouter } from 'react-router';
 
 function Room(props){
     let history = useHistory()
-    const roomCode = props.match.params.roomCode;
+    const roomCode = props.data.code;
     const csrftoken = getCookie('csrftoken');
     const [round, setRound] = useState(1);
-    const [status, setStatus] = useState("Created");
-    const [maxUsers, setMaxUsers] = useState(4);
-    const [artist, setArtist] = useState("Michael Jackson");
-    const [bracketType, setBracketType] = useState("Single Elimination");
-    const [isHost, setIsHost] = useState('');
-    const [showSettings, setShowSettings] = useState(false)
-    const [songs, setSongs] = useState([])
+    const maxUsers = props.data.max_users;
+    const artist = props.data.artist;
+    const bracket_type = props.data.bracket_type;
+    const [host, setHost] = useState('');
 
-     useEffect(() => {
+     /*useEffect(() => {
         fetch('/get-room/' + '?roomcode=' + roomCode)
         .then((response) => {
             if(!response.ok){
@@ -27,14 +24,9 @@ function Room(props){
             return response.json()
         })
         .then((data) => {
-            setMaxUsers(data.votes_to_skip);
-            setStatus(data.status);
-            setMaxUsers(data.max_users);
-            setArtist(data.artist);
-            setBracketType(data.bracket_type);
-            setIsHost(data.is_host);
+            setHost(data.is_host);
         });
-    }, [])
+    }, [])*/
 
     function getCookie(name) {
         let cookieValue = null;

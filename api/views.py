@@ -26,7 +26,7 @@ class GetRoom(APIView):
             match = Lobby.objects.filter(code=code)
             if len(match) > 0:
                 data = CreateRoomSerializer(match[0]).data
-                current_user = self.request.user.first_name + " " + self.request.user.last_name
+                current_user = self.request.session.session_key
                 data['is_host'] = current_user == match[0].host
                 return HttpResponse(data, status=status.HTTP_200_OK)
             return HttpResponse({'Room Code Does Not Match With Open Room': 'Invalid Code'}, status=status.HTTP_404_NOT_FOUND)

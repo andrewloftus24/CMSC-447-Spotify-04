@@ -12,7 +12,7 @@ function Bracket() {
 
     function GrabSongs() {
         fetch('http://127.0.0.1:8000/api/toptracks/?' + new URLSearchParams({
-            artist: document.getElementById('artistName').value,
+            artist: artist,
             num: 8,
         }))
         .then(response => response.json())
@@ -49,7 +49,7 @@ function Bracket() {
         <br/>
          {dropdown_menu}
         <br/>
-        <SingleElimination songs={songs}/>
+        <SingleElimination artist={artist}/>
         <br/>
     </div>
   );

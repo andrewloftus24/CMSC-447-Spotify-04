@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from .credentials import SPOT_SECRET, SPOT_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,8 +178,8 @@ SOCIAL_AUTH_DISCONNECT_PIPELINE = (
 )
 
 #Spotify Authentication
-SOCIAL_AUTH_SPOTIFY_KEY = 'f14faa95f781483da8d47a43edc9882b'
-SOCIAL_AUTH_SPOTIFY_SECRET = '9d732406270743ff97d5acf2300962cd'
+SOCIAL_AUTH_SPOTIFY_KEY = SPOT_KEY
+SOCIAL_AUTH_SPOTIFY_SECRET = SPOT_SECRET
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-read-private']
 
 LOGIN_REDIRECT_URL = '/bracket'

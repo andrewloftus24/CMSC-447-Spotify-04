@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import spotipy
 import json
+from spotifytournament.credentials import SPOT_SECRET, SPOT_KEY
 
 from rest_framework.decorators import api_view
 
@@ -51,8 +52,8 @@ def topTracks(request):
     # Setups
     scope = 'user-top-read'
     response = HttpResponse()
-    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id='f14faa95f781483da8d47a43edc9882b',
-                                                           client_secret='9d732406270743ff97d5acf2300962cd')
+    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id=SPOT_KEY,
+                                                           client_secret=SPOT_SECRET)
     sp = spotipy.Spotify(auth_manager=auth_manager)
     name = request.GET.get('artist', None)
     if name is not None:

@@ -13,8 +13,6 @@ function Home(props){
         .then(data => setRoomCode(data.code))
     })
 
-    console.log(roomCode);
-
     let homePage =  (
             <div class="container">
                 <div class="row justify-content-md-center">
@@ -29,7 +27,7 @@ function Home(props){
                 </div>
                 <div class="row">
                     <div class="col-sm-2" />
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 justify-content-md-right">
                         <a href='/join'>
                         <button type="button" class="btn btn-primary">
                             Join Room
@@ -48,25 +46,6 @@ function Home(props){
                 </div>
             </div>
     )
-
-    /*let br = (
-        <BrowserRouter>
-            <Switch>
-                <Route exact path='/'>{roomCode ? <Redirect to={`/room/${roomCode}`} /> : homePage}</Route>
-                <Route path='/join' component={JoinRoom} />
-                <Route path='/create'>
-                    <CreateRoom
-                        maxUsers = {4}
-                        artist = {"Michael Jackson"}
-                        bracketType = {"Single Elimination"}
-                    />
-                </Route>
-                <Route path='/room/:roomCode' component={Room} />
-            </Switch>
-        </BrowserRouter>
-    )*/
-
-    //let redirect = roomCode ? <Redirect to={`/room/${roomCode}`} /> : homePage
 
     return(
         <div>
