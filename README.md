@@ -1,8 +1,16 @@
-<<<<<<< HEAD
 # CMSC-447-Spotify-04 - Andrew's Develop Branch
-=======
-# CMSC-447-Spotify-04 - Develop Branch
->>>>>>> develop
+
+## Changelog - 11/21/21
+
+* Created new views for Home, Join Room, Create Room, and Room
+* Users can create a room by specifying bracket type, artist, and max users
+* Users can join a created room
+
+## Changelog - 11/17/21
+
+* Added React App for Generating the Brackets
+* Contains template based off of James' Designs
+* Currently just has single elimination, but will add more
 
 ## Changelog - 11/2/21
 
@@ -12,10 +20,6 @@
 * NavBar is global, so any updates to it will be reflected across all pages that include it
 * Allows you to login with your Spotify account
 
-## Changelog - 11/17/21
-* Added React App for Generating the Brackets
-* Contains template based off of James' Designs
-* Currently just has single elimination, but will add more
 
 ## Dependencies
 
@@ -36,8 +40,9 @@
 
 ## Future Additions
 
-* Incorporate Spotify API elements into the frontend
 * Functional dropdown menu when browser resize occurs
-* Change NavMenu to reflect logged in status
-* Incorporate James' Spotify Artist Queries
 * Begin creating more brackets and add interactivity
+* Add a way to see who all is in the room
+* Store previous brackets/results into the database
+* Enfore max user rule
+* Make front-end look more aesthetically pleasing
