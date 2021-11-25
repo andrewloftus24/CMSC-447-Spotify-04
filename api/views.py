@@ -9,9 +9,10 @@ from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 
-from api.models import Lobby
-from api.serializers import GetRoomSerializer, CreateRoomSerializer
+from api.models import Lobby, User
+from api.serializers import GetRoomSerializer, CreateRoomSerializer, UserSerializer
 
+from django.contrib.auth import get_user_model
 
 class Room(generics.ListAPIView):
     lobbies = Lobby.objects.all()
@@ -41,8 +42,10 @@ class JoinRoom(APIView):
         if code != None:
             match_result = Lobby.objects.filter(code=code)
             if len(match_result) > 0:
+                users = User.objects.create(host=match_result[0], name=self.request.user.first_name)
+                users.save()
                 self.request.session['room_code'] = code
-                return HttpResponse({'Success': 'Room Joined'}, status=status.HTTP_200_OK)
+                return HttpResponse({'Room Joined': 'Good Job'}, status=status.HTTP_200_OK)
             return HttpResponse({'Bad Request': 'Invalid Code'}, status=status.HTTP_400_BAD_REQUEST)
         return HttpResponse({'Bad Request': 'Code is None'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -65,12 +68,18 @@ class CreateRoom(APIView):
                 match.bracket_type = bracket_type
                 match.max_users = max_users
                 match.artist = artist
+                User.objects.all().delete()
+                users = User.objects.create(host=match, name=room_host)
+                users.save()
                 match.save(update_fields=['bracket_type', 'max_users', 'artist'])
                 self.request.session['room_code'] = match.code
                 return HttpResponse(JsonResponse(GetRoomSerializer(match).data), status=status.HTTP_200_OK)
             else:
                 match = Lobby(host=room_host, bracket_type=bracket_type, artist=artist, max_users=max_users)
                 match.save()
+                User.objects.all().delete()
+                users = User.objects.create(host=match, name=room_host)
+                users.save()
                 self.request.session['room_code'] = match.code
                 return HttpResponse(JsonResponse(GetRoomSerializer(match).data), status=status.HTTP_201_CREATED)
 
@@ -85,6 +94,24 @@ class RoomCode(APIView):
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
 
+class GetPlayerList(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        code = request.GET.get('code')
+        if code != None:
+            match = Lobby.objects.filter(code=code)
+            if match.exists():
+                users = User.objects.filter(host=match[0].host)
+                userDict = {'users': None}
+                userList = []
+                for user in users:
+                    userList.append(user.name)
+                userDict['users'] = userList
+                return HttpResponse(JsonResponse(userDict))
+
+
 class LeaveRoom(APIView):
     def post(self, request, format=None):
         if 'room_code' in self.request.session:
@@ -92,6 +119,7 @@ class LeaveRoom(APIView):
             host_id = self.request.user.first_name
             room_results = Lobby.objects.filter(host=host_id)
             if len(room_results) > 0:
+                User.objects.all().delete()
                 room = room_results[0]
                 room.delete()
 
@@ -127,4 +155,20 @@ def serializerData(request):
             match.save(update_fields=['bracket_type', 'max_users', 'artist'])
             request.session['room_code'] = match.code
             return HttpResponse(GetRoomSerializer(match).data, status=status.HTTP_200_OK)
+    return HttpResponse({'Bad Request': 'Room could not be created'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+def testUsers(request):
+    code = request.GET.get('code')
+    if code != None:
+        match = Lobby.objects.filter(code=code)
+        if match.exists():
+            users = User.objects.filter(host=match[0].host)
+            userDict = {'users': None}
+            userList = []
+            for user in users:
+                userList.append(user.name)
+            userDict['users'] = userList
+            return HttpResponse(JsonResponse(userDict))
+
     return HttpResponse({'Bad Request': 'Room could not be created'}, status=status.HTTP_400_BAD_REQUEST)

@@ -32,7 +32,9 @@ function JoinRoom(props){
             } else{
                 setError("Room not found.")
             }
-        }).catch((error) => {
+
+        }).then((data) => console.log(data))
+        .catch((error) => {
             console.log(error)
         })
     }

@@ -10,5 +10,6 @@ urlpatterns = [
     path('room-code/', views.RoomCode.as_view()),
     path('session-exists/', views.sessionKey),
     path('session-info/', views.sessionInfo),
-    path('ser/', views.serializerData)
+    path('ser/', views.serializerData),
+    path('users/', views.GetPlayerList.as_view())
 ]

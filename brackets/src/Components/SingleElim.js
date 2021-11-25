@@ -4,10 +4,12 @@ function SingleElimination(props){
     const artist = props.artist;
     const [songs, setSongs] = useState([]);
 
-    GrabSongs();
+    useEffect(() => {
+        GrabSongs();
+    }, []);
 
     function GrabSongs() {
-        fetch('http://127.0.0.1:8000/api/toptracks/?' + new URLSearchParams({
+        fetch('/api/toptracks/?' + new URLSearchParams({
             artist: artist,
             num: 8,
         }))

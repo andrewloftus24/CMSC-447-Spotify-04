@@ -7,11 +7,11 @@ import Room from './Components/Room';
 function Home(props){
     const [roomCode, setRoomCode] = useState(null)
 
-    useEffect(() => {
+     useEffect(() => {
         fetch('/room-code/')
         .then(response => response.json())
         .then(data => setRoomCode(data.code))
-    })
+    }, [])
 
     let homePage =  (
             <div class="container">
@@ -27,16 +27,18 @@ function Home(props){
                 </div>
                 <div class="row">
                     <div class="col-sm-2" />
-                    <div class="col-sm-3 justify-content-md-right">
-                        <a href='/join'>
+                    <div class="col-sm-3 text-center">
+                        <a href = '/join'>
                         <button type="button" class="btn btn-primary">
                             Join Room
                         </button>
                         </a>
+                        <br/>
+                        <br/>
                     </div>
                     <div class="col-sm-2" />
-                    <div class="col-sm-3">
-                        <a href='/create'>
+                    <div class="col-sm-3 text-center">
+                        <a href="/create">
                         <button type="button" class="btn btn-primary">
                             Create Room
                         </button>
@@ -50,19 +52,13 @@ function Home(props){
     return(
         <div>
             <BrowserRouter>
-            <Switch>
-                <Route exact path='/bracket'>{homePage}</Route>
-                <Route path='/join' component={JoinRoom} />
-                <Route path='/create'>
-                    <CreateRoom
-                        maxUsers = {4}
-                        artist = {"Michael Jackson"}
-                        bracketType = {"Single Elimination"}
-                    />
-                </Route>
-                <Route path='/room/:roomCode' component={Room} />
-            </Switch>
-        </BrowserRouter>
+                <Switch>
+                    <Route exact path='/bracket'>{homePage}</Route>
+                    <Route path='/join' component={JoinRoom} />
+                    <Route path='/create' component={CreateRoom} />
+                    <Route path='/room/:roomCode' component={Room} />
+                </Switch>
+            </BrowserRouter>
         </div>
     )
 

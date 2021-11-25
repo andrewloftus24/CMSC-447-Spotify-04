@@ -10,7 +10,6 @@ function CreateRoom(props){
     const [artist, setArtist] = useState("");
     const [bracketType, setBracketType] = useState("");
     const [created, setCreated] = useState(false);
-    const [data, setData] = useState({});
 
     useEffect(() => {
         if(created){
@@ -32,7 +31,9 @@ function CreateRoom(props){
       };
       fetch('/start-room/', requestOptions)
       .then((response) => response.json())
-      .then((data) => history.push('/room/' + data.code));
+      .then((data) => history.push({
+        pathname: '/room/' + data.code,
+        state: { roomInfo: data}}));
     }
 
     let optionsMenu = (
