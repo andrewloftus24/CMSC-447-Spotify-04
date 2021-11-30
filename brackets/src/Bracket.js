@@ -1,10 +1,25 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import SingleElimination from './Components/SingleElim';
 
 function Bracket() {
-  return (
-    <div>
-        <h1 class="h1 text-center">Generating the Bracket</h1>
-        <br/>
+    const [generate, setGenerated] = useState(false);
+    const [songs, setSongs] = useState([]);
+    const [artist, setArtist] = useState("");
+
+    useEffect(() => {
+        GrabSongs();
+    }, [artist]);
+
+    function GrabSongs() {
+        fetch('http://127.0.0.1:8000/api/toptracks/?' + new URLSearchParams({
+            artist: artist,
+            num: 8,
+        }))
+        .then(response => response.json())
+        .then(data => setSongs(data));
+    }
+
+    let dropdown_menu = (
         <div class="container">
             <div class="row">
                 <div class="col p-2 border border-secondary">
@@ -17,97 +32,24 @@ function Bracket() {
                     </select>
                 </div>
                 <div class="col p-2 border border-secondary" align="center">
-                    <p>Bracket Source(Playlist Link or Keywords)</p>
+                    <input type="text" class="form-control" placeholder="Enter Artist Name" aria-label="Enter Artist Name" aria-describedby="basic-addon2" id="artistName" />
                 </div>
                 <div class="col p-2 border border-secondary" align="center">
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" onClick={() => setArtist(document.getElementById('artistName').value)}>
                         Generate
                     </button>
                 </div>
             </div>
         </div>
+    );
+
+  return (
+    <div>
+        <h1 class="h1 text-center">Generating the Bracket</h1>
         <br/>
-        <h3 class="h3 text-center">Single Elimination, Stage One</h3>
-        <h5 class="h5 text-center">Pick your favorites, then click SUBMIT</h5>
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 1
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 3
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-            </div>
-            <div class="row justify-content-md-center">
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 2
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 4
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <p>      </p>
-                </div>
-            </div>
-            <div class="row justify-content-md-center">
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 5
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 7
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-            </div>
-            <div class="row">
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 6
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-                <div class="col-sm-3 p-2 border border-secondary">
-                    <button type="button" class="btn btn-primary-outline">
-                        Song 8
-                    </button>
-                </div>
-                <div class="col-sm-2" />
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <p>      </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12" align="right">
-                    <button type="button" class="btn btn-primary">
-                        SUBMIT
-                    </button>
-                </div>
-            </div>
-        </div>
+         {dropdown_menu}
+        <br/>
+        <SingleElimination artist={artist}/>
         <br/>
     </div>
   );

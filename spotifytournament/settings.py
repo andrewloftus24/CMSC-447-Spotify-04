@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from .credentials import SPOT_SECRET, SPOT_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'brackets',
+    'api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'rest_framework',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -47,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'spotifytournament.urls'
@@ -66,6 +70,8 @@ TEMPLATES = [
         },
     },
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 WSGI_APPLICATION = 'spotifytournament.wsgi.application'
 
@@ -99,6 +105,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://<my-server-ip>:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://0.0.0.0"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://<my-server-ip>:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://0.0.0.0"
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -159,9 +178,9 @@ SOCIAL_AUTH_DISCONNECT_PIPELINE = (
 )
 
 #Spotify Authentication
-SOCIAL_AUTH_SPOTIFY_KEY = 'f14faa95f781483da8d47a43edc9882b'
-SOCIAL_AUTH_SPOTIFY_SECRET = '9d732406270743ff97d5acf2300962cd'
+SOCIAL_AUTH_SPOTIFY_KEY = SPOT_KEY
+SOCIAL_AUTH_SPOTIFY_SECRET = SPOT_SECRET
 SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-read-private']
 
-LOGIN_REDIRECT_URL = '/bracket'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

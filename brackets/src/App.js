@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
+import Home from "./Home";
 import Bracket from "./Bracket";
 
 export default class App extends Component {
@@ -10,11 +11,14 @@ export default class App extends Component {
   render() {
     return (
       <div className="center">
-        <Bracket />
+        <Home />
       </div>
     );
   }
 }
 
-const appDiv = document.getElementById("app");
-render(<App />, appDiv);
+// Frank Ocean
+// Tyler
+// Childish Gambino
+// Daniel Caesar
+// Kendrick Lamar
