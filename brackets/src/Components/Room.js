@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import CreateRoom from './CreateRoom';
 import SingleElimination from './SingleElim';
 import GetCookie from './GetCookie';
-import GetRoom from './GetRoom';
 import { useHistory } from "react-router-dom";
 import { withRouter } from 'react-router';
 
