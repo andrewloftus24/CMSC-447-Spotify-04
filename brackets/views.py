@@ -11,6 +11,7 @@ import json
 from spotifytournament.credentials import SPOT_SECRET, SPOT_KEY
 
 from rest_framework.decorators import api_view
+from brackets.models import Track
 
 
 def index(request):
@@ -76,6 +77,11 @@ def topTracks(request):
         if "Remaster" in tracks[x]:
             index = tracks[x].index('-')
             tracks[x] = tracks[x][0:index-1]
+
+    for result in results['tracks'][number_tracks:]:
+        track = Track.objects.create(id=result['id'], name=result['name'], popularity=result['popularity'],
+                                     artist_name=result['artists'][0]['name'], album_type=result['album']['album_type'],
+                                     album_name=result['album']['name'])
 
     response = json.dumps(tracks)
     # host_name is the session_key for the user
