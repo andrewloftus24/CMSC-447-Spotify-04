@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import GetCookie from './GetCookie';
 
 function Submit(props){
-    const [voteData, setVoteData] = useState({});
-    const [loaded, setLoaded] = false;
+    const [voteData, setVoteData] = useState([]);
     let csrftoken = GetCookie('csrftoken');
 
     useEffect(() => {
         UploadVotes();
-        setLoaded(true);
     }, [])
 
     async function UploadVotes(){
@@ -21,35 +19,50 @@ function Submit(props){
                 votes: props.votes
             }),
         };
+
         const response = await fetch('/api/updatevotes/', requestOptions);
         const data = await response.json();
+        userData = [...voteData];
+        userData.push({name: data.user, winners: data.winners});
+        window.console.log(userData);
 
-        setVoteData({name: data.user, winners: data.winners});
+        setVoteData(userData);
     }
 
-    window.console.log(voteData.name + "\n" + voteData.winners);
-
     let submitScreen = (
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-md-12">
-                    <h3 class="h3 text-center">Tallying Results From Single Elimination Stage One</h3>
-                </div>
-            </div>
-            <div class="row justify-content-md-center">
-            {voteData.map((person) => {
+        <div>
+            <h3 class="h3 text-center">Tallying Results From Single Elimination Stage One</h3>
+            <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Song 1</th>
+                    <th scope="col">Song 2</th>
+                    <th scope="col">Song 3</th>
+                    <th scope="col">Song 4</th>
+                </tr>
+            </thead>
+            <tbody>
+            {voteData.map((user) => {
                 return(
-                    <div class="col-md-3">
-                        <h6 class="h6 text-center">{person.name}</h6>
-                    </div>
-                )
+                    <tr>
+                        <th scope="row">{user.name}</th>
+                        {user.winners.map((song) => {
+                            return(
+                                <td>{song}</td>
+                            );
+                        })}
+                    </tr>
+                );
             })}
-            </div>
+            </tbody>
+            </table>
         </div>
     )
+
     return (
         <div>
-            {loaded ? submitScreen : ""}
+            {submitScreen}
         </div>
     )
 }
