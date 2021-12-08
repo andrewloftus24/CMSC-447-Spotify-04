@@ -21,7 +21,11 @@ function Home(props){
             <div class="container">
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
+                        <br/>
+                        <br/>
                         <h3 class="h3 text-center">BracketFy Home</h3>
+                        <br/>
+                        <br/>
                     </div>
                 </div>
                 <div class="row">

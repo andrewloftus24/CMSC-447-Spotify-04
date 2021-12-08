@@ -78,11 +78,23 @@ function Room(props){
         </div>
     )
 
+    let notStarted = (
+        <div>
+            <h3 class="h3 text-center">Code: {roomCode}</h3>
+            <br />
+            <h4 class="h4 text-center">Share this code with your friends!</h4>
+            <h4 class="h4 text-center">Wait for them all to join, then everyone press start!</h4>
+            <br />
+        </div>
+    )
+
     let renderBracket = (
             <div class="container">
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
-                        {started ? "" : <h3 class="h3 text-center">Code: {roomCode}</h3>}
+                        <br/>
+                        <br/>
+                        {started ? "" : notStarted}
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
@@ -92,24 +104,28 @@ function Room(props){
                     </div>
                 </div>
             </div>
-        )
+    )
+
+    let playerListTitle = (
+        <div class="row justify-content-md-center">
+            <div class="col-md-12">
+                <h5 class="h5 text-center">Player List</h5>
+            </div>
+        </div>
+    )
 
     let console = (
         <div class = "fixed-bottom">
             <div class = "container">
-                <div class="row justify-content-md-left">
-                    <div class="col-md-12 text-center">
-                        <button type="button" class="btn btn-primary" onClick={handleLeaveRoom}>
+                <div class="row justify-content-md-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary float-right" onClick={handleLeaveRoom}>
                             Leave Room
                         </button>
                     </div>
                 </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-md-12">
-                        <h5 class="h5 text-center">Player List</h5>
-                    </div>
-                </div>
-                {playerList.map((user) => {
+                {started ? "" : playerListTitle}
+                {started ? "" : playerList.map((user) => {
                     return(
                         <div class="row justify-content-md-center">
                             <div class="col-md-12">
