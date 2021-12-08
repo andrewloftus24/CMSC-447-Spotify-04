@@ -7,11 +7,15 @@ import Room from './Components/Room';
 function Home(props){
     const [roomCode, setRoomCode] = useState(null)
 
-     useEffect(() => {
-        fetch('/room-code/')
-        .then(response => response.json())
-        .then(data => setRoomCode(data.code))
+    useEffect(() => {
+        GetRoomCode();
     }, [])
+
+    async function GetRoomCode(){
+        const response = await fetch('/room-code/');
+        const data = await response.json();
+        setRoomCode(data.code);
+    }
 
     let homePage =  (
             <div class="container">

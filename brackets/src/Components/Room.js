@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import CreateRoom from './CreateRoom';
 import SingleElimination from './SingleElim';
 import GetCookie from './GetCookie';
-import GetRoom from './GetRoom';
 import { useHistory } from "react-router-dom";
 import { withRouter } from 'react-router';
 
@@ -28,8 +27,20 @@ function Room(props){
             setBracketType(data.bracket_type);
             setIsHost(data.is_host);
         });
+        fetch('/api/initvotes/?' + new URLSearchParams({
+                num: 8
+            }), {
+                headers : {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
 
+        })
+            .then((response) => response.json())
+            .then((data) => window.console.log(data));
     }, [started])
+
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -76,15 +87,8 @@ function Room(props){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started && isHost ? <SingleElimination artist={artist} /> : startButton}
-                        {started && !isHost ? <SingleElimination artist={artist} /> : ""}
-                    </div>
-                </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-md-12 text-center">
-                        <button type="button" class="btn btn-primary" onClick={handleLeaveRoom}>
-                            Leave Room
-                        </button>
+                        {started && isHost ? <SingleElimination artist={artist}/> : startButton}
+                        {started && !isHost ? <SingleElimination artist={artist}/> : ""}
                     </div>
                 </div>
             </div>
@@ -93,6 +97,13 @@ function Room(props){
     let console = (
         <div class = "fixed-bottom">
             <div class = "container">
+                <div class="row justify-content-md-left">
+                    <div class="col-md-12 text-center">
+                        <button type="button" class="btn btn-primary" onClick={handleLeaveRoom}>
+                            Leave Room
+                        </button>
+                    </div>
+                </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
                         <h5 class="h5 text-center">Player List</h5>

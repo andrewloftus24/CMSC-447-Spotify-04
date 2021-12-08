@@ -65,3 +65,9 @@ class Match(models.Model):
     item_a = models.ForeignKey('Item', on_delete=models.RESTRICT, related_name='+')
     item_b = models.ForeignKey('Item', on_delete=models.RESTRICT, related_name='+')
     winner = models.ForeignKey('Item', on_delete=models.RESTRICT, related_name='+')
+
+class Votes(models.Model):
+    user = models.CharField(max_length=20)
+    vote = models.IntegerField()
+    song_id = models.IntegerField()
+
