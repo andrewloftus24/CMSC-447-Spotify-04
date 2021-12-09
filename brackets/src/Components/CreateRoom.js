@@ -13,6 +13,7 @@ function CreateRoom(props){
 
     useEffect(() => {
         if(created){
+            StartVotes();
             Start();
         }
     }, [created])
@@ -35,6 +36,12 @@ function CreateRoom(props){
             pathname: '/room/' + data.code,
             state: { roomInfo: data}
         });
+    }
+
+    async function StartVotes(){
+        const response = await fetch('/api/initvotes/');
+        const data = await response.text();
+        window.console.log(data);
     }
 
     let optionsMenu = (

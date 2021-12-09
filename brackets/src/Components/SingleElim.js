@@ -22,22 +22,6 @@ function SingleElimination(props){
         setSongs(data);
     }
 
-    /*async function handleVotes(index){
-        let dbVotelist = []
-        const response = await fetch('/api/updatevotes/?' + new URLSearchParams({
-            id: index
-        }));
-        const data = await response.json();
-        dbVotelist = data.vote;
-        setUser(data.user);
-
-        window.console.log(dbVotelist);
-
-        let msg = String(data.user) + " voted for " + String(songs[index]) + "!";
-        setVotesList(dbVotelist);
-        setMessage(msg);
-    }*/
-
     const handleVotes = (index) => {
         let votes = [...votesList];
         if(index % 2 != 0){
@@ -56,13 +40,6 @@ function SingleElimination(props){
 
 
     const handleSubmit = () => {
-        /*let win = "";
-        for(var i = 0; i = 8; i++){
-            if(votesList[i] === 1){
-                win.push(songs[i]);
-            }
-        }
-        setWinners(win);*/
         setSubmitted(true);
     }
 
@@ -167,7 +144,7 @@ function SingleElimination(props){
     if(submitted){
         return(
             <div>
-                <Submit numSongs={songs.length} votes={votesList} songs={songs} />
+                <Submit numSongs={songs.length} votes={votesList} songs={songs} joinCode={props.joincode} />
             </div>
         )
     }

@@ -19,43 +19,20 @@ function Room(props){
     const [playerList, setPlayerList] = useState([]);
 
     useEffect(() => {
-        fetch('/get-room/' + '?roomcode=' + roomCode)
-        .then((response) => response.json())
-        .then((data) => {
-            setMaxUsers(data.max_users);
-            setArtist(data.artist);
-            setBracketType(data.bracket_type);
-            setIsHost(data.is_host);
-        });
-        fetch('/api/initvotes/?' + new URLSearchParams({
-                num: 8
-            }), {
-                headers : {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-
-        })
-            .then((response) => response.json())
-            .then((data) => window.console.log(data));
+        GetRoom();
     }, [started])
 
 
 
     useEffect(() => {
         const interval = setInterval(() => {
-            fetch('/users/' + '?code=' + roomCode)
-            .then((response) => response.json())
-            .then((data) => {
-                setPlayerList(data.users);
-            });
+            GetUsers();
         }, 4000);
         return () => clearInterval(interval);
     }, [started])
 
-    window.console.log(playerList);
-
     const handleLeaveRoom = () => {
+        ClearVotes();
         const requestOptions = {
             method: 'POST',
             headers: {"Content-type": "application/json", 'X-CSRFToken': csrftoken}
@@ -66,6 +43,27 @@ function Room(props){
                 window.location.reload()
             }
             )
+    }
+
+    async function GetUsers(){
+        const response = await fetch('/users/' + '?code=' + roomCode);
+        const data = await response.json();
+        setPlayerList(data.users);
+    }
+
+    async function GetRoom(){
+        const response = await fetch('/get-room/' + '?roomcode=' + roomCode);
+        const data = await response.json();
+        setMaxUsers(data.max_users);
+        setArtist(data.artist);
+        setBracketType(data.bracket_type);
+        setIsHost(data.is_host);
+    }
+
+    async function ClearVotes(){
+        const response = await fetch('/api/reset/');
+        const data = await response.text();
+        window.console.log(data);
     }
 
     let startButton = (
@@ -99,8 +97,8 @@ function Room(props){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started && isHost ? <SingleElimination artist={artist}/> : startButton}
-                        {started && !isHost ? <SingleElimination artist={artist}/> : ""}
+                        {started && isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : startButton}
+                        {started && !isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : ""}
                     </div>
                 </div>
             </div>

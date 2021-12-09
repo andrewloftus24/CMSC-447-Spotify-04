@@ -69,5 +69,5 @@ class Match(models.Model):
 class Votes(models.Model):
     user = models.CharField(max_length=20)
     vote = models.IntegerField()
-    song_id = models.IntegerField()
+    song_id = models.CharField(max_length=100)
 

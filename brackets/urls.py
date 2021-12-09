@@ -16,5 +16,6 @@ urlpatterns = [
     path('room/<str:roomCode>', views.bracket),
     path('api/initvotes/', views.startVotes),
     path('api/reset/', views.resetVotes),
-    path('api/updatevotes/', views.updateVotes)
+    path('api/updatevotes/', views.updateVotes),
+    path('api/getvotes/', views.getVotes)
 ]

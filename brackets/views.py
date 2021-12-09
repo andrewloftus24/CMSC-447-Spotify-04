@@ -91,45 +91,58 @@ def topTracks(request):
 
 @api_view(['GET', 'POST'])
 def startVotes(request):
-    resetVotes(request)
-    username = request.user.first_name
-    num_songs = int(request.GET.get('num'))
 
-    vote_dict = {'user': username, 'vote': None}
-    vote_list = []
+    Votes.objects.all().delete()
 
-    for i in range(num_songs):
-        new_vote = Votes(user=username, vote=0, song_id=i)
-        vote_list.append(0)
-        new_vote.save()
-
-    vote_dict['vote'] = vote_list
-
-    return JsonResponse(vote_dict)
+    return HttpResponse("Initialized")
 
 @api_view(['GET', 'POST'])
 def updateVotes(request):
     username = request.user.first_name
+
+    resetVotes(request)
+
     if request.method == "POST":
         songs = request.data.get('songs')
         votes = request.data.get('votes')
-        vote_dict = {'user': username, 'winners': None}
-        vote_list = []
 
-        user_votes = Votes.objects.filter(user=username)
         for i in range(len(votes)):
-            user_votes[i].vote = votes[i]
-            if votes[i] == 1:
-                vote_list.append(songs[i])
+            new_vote = Votes(user=username, vote=votes[i], song_id=songs[i])
+            new_vote.save()
 
-        vote_dict['winners'] = vote_list
-
-        return JsonResponse(vote_dict)
+        return HttpResponse("Successfully updated votes.")
 
     return HttpResponse("Invalid")
 
+def getVotes(request):
+    room_list = []
+    room_dict = {'data': None}
+    song_list = []
+    vote_list = []
+
+    user_votes = Votes.objects.all()
+    vote_dict = {}
+    for i in range(len(user_votes)):
+        if i % 8 == 0:
+            vote_dict = {'user': user_votes[i].user, 'winners': None, 'votes': None}
+            vote_list = []
+            song_list = []
+        vote_list.append(user_votes[i].vote)
+        if user_votes[i].vote == 1:
+            song_list.append(user_votes[i].song_id)
+
+        if i % 8 == 7:
+            vote_dict['votes'] = vote_list
+            vote_dict['winners'] = song_list
+            room_list.append(vote_dict)
+
+    room_dict['data'] = room_list
+
+    return JsonResponse(room_dict)
+
 def resetVotes(request):
-    votes = Votes.objects.all()
-    votes.delete()
+    username = request.user.first_name
+
+    Votes.objects.filter(user=username).delete()
 
     return HttpResponse("Deleted")
