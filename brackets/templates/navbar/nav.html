@@ -26,9 +26,6 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/bracket">Bracket</a>
-                </li>
-                <li class="nav-item">
                     {% if user.is_authenticated %}
                         <a class="nav-link" href="{% url 'logout' %}">Sign out</a>
                     {% else %}
