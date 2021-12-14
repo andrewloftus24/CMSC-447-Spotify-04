@@ -19,31 +19,20 @@ function Room(props){
     const [playerList, setPlayerList] = useState([]);
 
     useEffect(() => {
-        fetch('/get-room/' + '?roomcode=' + roomCode)
-        .then((response) => response.json())
-        .then((data) => {
-            setMaxUsers(data.max_users);
-            setArtist(data.artist);
-            setBracketType(data.bracket_type);
-            setIsHost(data.is_host);
-        });
-
+        GetRoom();
     }, [started])
+
+
 
     useEffect(() => {
         const interval = setInterval(() => {
-            fetch('/users/' + '?code=' + roomCode)
-            .then((response) => response.json())
-            .then((data) => {
-                setPlayerList(data.users);
-            });
+            GetUsers();
         }, 4000);
         return () => clearInterval(interval);
     }, [started])
 
-    window.console.log(playerList);
-
     const handleLeaveRoom = () => {
+        ClearVotes();
         const requestOptions = {
             method: 'POST',
             headers: {"Content-type": "application/json", 'X-CSRFToken': csrftoken}
@@ -56,6 +45,27 @@ function Room(props){
             )
     }
 
+    async function GetUsers(){
+        const response = await fetch('/users/' + '?code=' + roomCode);
+        const data = await response.json();
+        setPlayerList(data.users);
+    }
+
+    async function GetRoom(){
+        const response = await fetch('/get-room/' + '?roomcode=' + roomCode);
+        const data = await response.json();
+        setMaxUsers(data.max_users);
+        setArtist(data.artist);
+        setBracketType(data.bracket_type);
+        setIsHost(data.is_host);
+    }
+
+    async function ClearVotes(){
+        const response = await fetch('/api/reset/');
+        const data = await response.text();
+        window.console.log(data);
+    }
+
     let startButton = (
         <div>
             <button type="button" class="btn btn-primary" onClick={() => setStarted(!started)}>
@@ -66,38 +76,54 @@ function Room(props){
         </div>
     )
 
+    let notStarted = (
+        <div>
+            <h3 class="h3 text-center">Code: {roomCode}</h3>
+            <br />
+            <h4 class="h4 text-center">Share this code with your friends!</h4>
+            <h4 class="h4 text-center">Wait for them all to join, then everyone press start!</h4>
+            <br />
+        </div>
+    )
+
     let renderBracket = (
             <div class="container">
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
-                        {started ? "" : <h3 class="h3 text-center">Code: {roomCode}</h3>}
+                        <br/>
+                        <br/>
+                        {started ? "" : notStarted}
                     </div>
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started && isHost ? <SingleElimination artist={artist} /> : startButton}
-                        {started && !isHost ? <SingleElimination artist={artist} /> : ""}
-                    </div>
-                </div>
-                <div class="row justify-content-md-center">
-                    <div class="col-md-12 text-center">
-                        <button type="button" class="btn btn-primary" onClick={handleLeaveRoom}>
-                            Leave Room
-                        </button>
+                        {started && isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : startButton}
+                        {started && !isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : ""}
                     </div>
                 </div>
             </div>
-        )
+    )
+
+    let playerListTitle = (
+        <div class="row justify-content-md-center">
+            <div class="col-md-12">
+                <h5 class="h5 text-center">Player List</h5>
+            </div>
+        </div>
+    )
 
     let console = (
         <div class = "fixed-bottom">
             <div class = "container">
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
-                        <h5 class="h5 text-center">Player List</h5>
+                        <button type="button" class="btn btn-primary float-right" onClick={handleLeaveRoom}>
+                            Leave Room
+                        </button>
                     </div>
                 </div>
-                {playerList.map((user) => {
+                {started ? "" : playerListTitle}
+                {started ? "" : playerList.map((user) => {
                     return(
                         <div class="row justify-content-md-center">
                             <div class="col-md-12">
