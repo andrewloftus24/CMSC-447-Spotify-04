@@ -13,7 +13,6 @@ import json
 from rest_framework.views import APIView
 
 from brackets.models import Votes
-from brackets.serializers import VoteSerializer
 from spotifytournament.credentials import SPOT_SECRET, SPOT_KEY
 
 from rest_framework.decorators import api_view
