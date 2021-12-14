@@ -7,17 +7,25 @@ import Room from './Components/Room';
 function Home(props){
     const [roomCode, setRoomCode] = useState(null)
 
-     useEffect(() => {
-        fetch('/room-code/')
-        .then(response => response.json())
-        .then(data => setRoomCode(data.code))
+    useEffect(() => {
+        GetRoomCode();
     }, [])
+
+    async function GetRoomCode(){
+        const response = await fetch('/room-code/');
+        const data = await response.json();
+        setRoomCode(data.code);
+    }
 
     let homePage =  (
             <div class="container">
                 <div class="row justify-content-md-center">
                     <div class="col-md-12">
+                        <br/>
+                        <br/>
                         <h3 class="h3 text-center">BracketFy Home</h3>
+                        <br/>
+                        <br/>
                     </div>
                 </div>
                 <div class="row">

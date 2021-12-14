@@ -13,34 +13,46 @@ function CreateRoom(props){
 
     useEffect(() => {
         if(created){
+            StartVotes();
             Start();
         }
     }, [created])
 
 
 
-    function Start(){
-         const requestOptions = {
-          method: 'POST',
-          headers: {"Content-type" : "application/json", 'X-CSRFToken': csrftoken},
-          body: JSON.stringify({
-              max_users: maxUsers,
-              artist: artist,
-              bracket_type: bracketType
-          }),
-      };
-      fetch('/start-room/', requestOptions)
-      .then((response) => response.json())
-      .then((data) => history.push({
-        pathname: '/room/' + data.code,
-        state: { roomInfo: data}}));
+    async function Start(){
+        const requestOptions = {
+            method: 'POST',
+            headers: {"Content-type" : "application/json", 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({
+                max_users: maxUsers,
+                artist: artist,
+                bracket_type: bracketType
+            }),
+        };
+        const response = await fetch('/start-room/', requestOptions)
+        const data = await response.json();
+        history.push({
+            pathname: '/room/' + data.code,
+            state: { roomInfo: data}
+        });
+    }
+
+    async function StartVotes(){
+        const response = await fetch('/api/initvotes/');
+        const data = await response.text();
+        window.console.log(data);
     }
 
     let optionsMenu = (
         <div class="container">
             <div class="row justify-content-md-center">
                 <div class="col-md-12">
+                    <br/>
+                    <br/>
                     <h3 class="h3 text-center">Create Room</h3>
+                    <br/>
+                    <br/>
                 </div>
             </div>
             <div class="row">
