@@ -79,7 +79,7 @@ function Submit(props){
             </table>
         </div>
     )
-
+//hi
     let totalVotes = (
         <div>
             <h3 class="h3 text-center">Scoreboard</h3>
