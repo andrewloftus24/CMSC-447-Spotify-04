@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import GetCookie from './GetCookie';
+import SingleElimination from './SingleElim';
 
 function Submit(props){
     const [voteData, setVoteData] = useState([]);
-    const [tallys, setTallys] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
+    const [tallys, setTallys] = useState(props.tallyList);
+    const [nextStage, setNextStage] = useState(false);
+    const [songs, setSongs] = useState(props.reducedSongs);
+    const [songwinners, setWinners] = useState([]);
+    const [songDisplay, setDisplay] = useState([]);
     let csrftoken = GetCookie('csrftoken');
 
     useEffect(() => {
         UploadVotes();
     }, [])
+
+    useEffect(() => {
+        window.console.log("hello");
+    }, [nextStage])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -22,31 +31,61 @@ function Submit(props){
             method: 'POST',
             headers: {"Content-type" : "application/json", 'X-CSRFToken': csrftoken},
             body: JSON.stringify({
-                code: props.joinCode,
-                songs: props.songs,
+                songs: songs,
                 votes: props.votes
             }),
         };
 
         const response = await fetch('/api/updatevotes/', requestOptions);
-        const data = await response.text();
+        const data = await response.json();
     }
 
     async function GrabVotes(){
-        const response = await fetch('/api/getvotes/');
+        const response = await fetch('/api/getvotes/?' + new URLSearchParams({
+            num: tallys.length
+        }));
+
         const data = await response.json();
         let userData = [];
         let updateTallys = [...tallys];
+        let displayNames = [];
         for(var i = 0; i < Object.keys(data.data).length; i++){
             userData.push(data.data[i]);
-            for(var j = 0; j < 8; j++){
+            for(var j = 0; j < tallys.length; j++){
                 updateTallys[j] += data.data[i].votes[j];
+                if(j < (tallys.length / 2)){
+                    let textDisplay = "Song " + String(j+1);
+                    displayNames.push(textDisplay);
+                }
             }
         }
         setVoteData(userData);
         setTallys(updateTallys);
+        setDisplay(displayNames);
     }
 
+    const handleContinue = () => {
+        let winners = [];
+        let updatedSongs = [...props.songs];
+        let winner = 0;
+        for(var i = 0; i < tallys.length; i++){
+            if(i % 2 != 0){
+                if(tallys[i] > winner){
+                    winners.push(songs[i]);
+                }
+                else{
+                    winners.push(songs[i-1]);
+                }
+            }
+            winner = tallys[i];
+        }
+        for(var i = 0; i < songs.length/2; i++){
+            updatedSongs[i+props.end] = winners[i];
+        }
+        window.console.log("updated list: " + updatedSongs);
+        setWinners(updatedSongs);
+        setNextStage(true);
+    }
 
     let submitScreen = (
         <div>
@@ -56,14 +95,17 @@ function Submit(props){
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Song 1</th>
-                    <th scope="col">Song 2</th>
-                    <th scope="col">Song 3</th>
-                    <th scope="col">Song 4</th>
+                    {songDisplay.map((name) => {
+                                return(
+                                    <th scope="col">
+                                        {name}
+                                    </th>
+                                );
+                    })}
                 </tr>
             </thead>
             <tbody>
-            {voteData.map((data, index) => {
+            {voteData.map((data) => {
                 return(
                     <tr>
                         <th scope="row">{data.user}</th>
@@ -79,7 +121,7 @@ function Submit(props){
             </table>
         </div>
     )
-//hi
+
     let totalVotes = (
         <div>
             <h3 class="h3 text-center">Scoreboard</h3>
@@ -92,7 +134,7 @@ function Submit(props){
                 </tr>
             </thead>
             <tbody>
-            {props.songs.map((name, index) => {
+            {songs.map((name, index) => {
                 return(
                     <tr>
                         <th scope="col">{name}</th>
@@ -105,6 +147,15 @@ function Submit(props){
         </div>
     )
 
+
+    if(nextStage){
+        return (
+            <div>
+                <SingleElimination artist={props.artist} songs={songwinners} round={props.round+1}/>
+            </div>
+        )
+    }
+
     return (
         <div>
             {submitScreen}
@@ -113,6 +164,10 @@ function Submit(props){
             <br/>
             <br/>
             {totalVotes}
+            <br/>
+            <button type="button" class ="btn btn-primary" onClick={() => handleContinue()}>
+                Continue
+            </button>
         </div>
     )
 }

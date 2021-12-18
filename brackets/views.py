@@ -105,11 +105,17 @@ def updateVotes(request):
         songs = request.data.get('songs')
         votes = request.data.get('votes')
 
+        vote_dict = {'votes': None}
+        vote_list = []
+
         for i in range(len(votes)):
             new_vote = Votes(user=username, vote=votes[i], song_id=songs[i])
             new_vote.save()
+            vote_list.append(0)
 
-        return HttpResponse("Successfully updated votes.")
+        vote_dict['votes'] = vote_list
+
+        return JsonResponse(vote_dict)
 
     return HttpResponse("Invalid")
 
@@ -121,8 +127,11 @@ def getVotes(request):
 
     user_votes = Votes.objects.all()
     vote_dict = {}
+
+    num_songs = int(request.GET.get('num'))
+
     for i in range(len(user_votes)):
-        if i % 8 == 0:
+        if i % num_songs == 0:
             vote_dict = {'user': user_votes[i].user, 'winners': None, 'votes': None}
             vote_list = []
             song_list = []
@@ -130,7 +139,7 @@ def getVotes(request):
         if user_votes[i].vote == 1:
             song_list.append(user_votes[i].song_id)
 
-        if i % 8 == 7:
+        if i % num_songs == (num_songs - 1):
             vote_dict['votes'] = vote_list
             vote_dict['winners'] = song_list
             room_list.append(vote_dict)
