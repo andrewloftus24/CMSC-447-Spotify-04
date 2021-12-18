@@ -97,8 +97,7 @@ function Room(props){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started && isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : startButton}
-                        {started && !isHost ? <SingleElimination artist={artist} joincode={roomCode}/> : ""}
+                        {started ? <SingleElimination artist={artist} songs={[]} round={round}/> : startButton}
                     </div>
                 </div>
             </div>
