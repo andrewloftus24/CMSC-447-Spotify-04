@@ -89,6 +89,51 @@ def topTracks(request):
     return HttpResponse(response)
 
 @api_view(['GET', 'POST'])
+def getPlaylistNames(request):
+    # Setups
+    scope = 'playlist-read-collaborative'
+    response = HttpResponse()
+    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id=SPOT_KEY,
+                                                           client_secret=SPOT_SECRET)
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    # Search that uri for the top 8 songs for the bracket, stored as name in tracks
+    playlists = sp.user_playlists(request.user.username)
+    playlist_dict = {'playlists': None}
+    playlist_list = []
+    for x in range(len(playlists['items'])):
+        playlist_list.append(playlists['items'][x]['name'])
+
+    playlist_dict['playlists'] = playlist_list
+    return JsonResponse(playlist_dict)
+
+def getPlaylistItems(request):
+    # Setups
+    scope = 'playlist-read-collaborative'
+    response = HttpResponse()
+    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id=SPOT_KEY,
+                                                           client_secret=SPOT_SECRET)
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    # Search that uri for the top 8 songs for the bracket, stored as name in tracks
+    playlist = request.GET.get('artist')
+    playlist_id = 0
+    playlist_dict = {'tracks': None}
+    playlist_list = []
+    if playlist is not None:
+        playlists = sp.user_playlists(request.user.username)
+        for x in range(len(playlists['items'])):
+            if playlists['items'][x]['name'] == playlist:
+                playlist_id = playlists['items'][x]['id']
+                break
+
+        tracks = sp.playlist_tracks(playlist_id=playlist_id)
+
+        for x in range(8):
+           playlist_list.append(tracks['items'][x]['track']['name'])
+
+        response = json.dumps(playlist_list)
+        return HttpResponse(response)
+
+@api_view(['GET', 'POST'])
 def startVotes(request):
 
     Votes.objects.all().delete()

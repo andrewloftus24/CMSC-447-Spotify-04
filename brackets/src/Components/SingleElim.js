@@ -12,11 +12,16 @@ function SingleElimination(props){
     const [submitted, setSubmitted] = useState(false);
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(0);
-
+    window.console.log(props.songType);
     useEffect(() => {
         if(round === 1){
             setEnd(8);
-            GrabSongs();
+            if(props.songType === "Artist"){
+                GrabSongs();
+            }
+            else if(props.songType === "Playlist"){
+                GrabPlaylistItems();
+            }
         }
         else if(round === 2){
             setStart(8);
@@ -41,12 +46,23 @@ function SingleElimination(props){
             num: 8,
         }));
         const data = await response.json();
+        let w = data.tracks;
+        for(var i = 8; i < 15; i++){
+            w.push(" ");
+        }
+        setSongs(w);
+    }
+
+    async function GrabPlaylistItems(){
+        const response = await fetch('/api/playlisttracks/?' + new URLSearchParams({
+            artist: artist
+        }));
+        const data = await response.json();
         let w = [...data];
         for(var i = 8; i < 15; i++){
             w.push(" ");
         }
         setSongs(w);
-
     }
 
     const handleVotes = (index) => {

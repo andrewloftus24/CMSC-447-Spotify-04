@@ -59,19 +59,23 @@ class CreateRoom(APIView):
         r = self.serializer_class(data=request.data)
         if r.is_valid():
             bracket_type = r.data.get('bracket_type')
+            song_type = r.data.get('song_type')
             max_users = r.data.get('max_users')
+            #playlist = r.data.get('playlist')
             artist = r.data.get('artist')
             room_host = self.request.user.first_name
             match_info = Lobby.objects.filter(host=room_host)
             if match_info.exists():
                 match = match_info[0]
                 match.bracket_type = bracket_type
+                match.song_type = song_type
                 match.max_users = max_users
+                #match.playlist = playlist
                 match.artist = artist
                 User.objects.all().delete()
                 users = User.objects.create(host=match, name=room_host)
                 users.save()
-                match.save(update_fields=['bracket_type', 'max_users', 'artist'])
+                match.save(update_fields=['bracket_type', 'max_users', 'song_type', 'artist'])
                 self.request.session['room_code'] = match.code
                 return HttpResponse(JsonResponse(GetRoomSerializer(match).data), status=status.HTTP_200_OK)
             else:
