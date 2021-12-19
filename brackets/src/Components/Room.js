@@ -14,6 +14,8 @@ function Room(props){
     const [maxUsers, setMaxUsers] = useState(0);
     const [artist, setArtist] = useState("");
     const [bracketType, setBracketType] = useState("");
+    const [songType, setSongType] = useState("");
+    const [playlist, setPlaylist] = useState("");
     const [isHost, setIsHost] = useState(false);
     const [started, setStarted] = useState(false);
     const [playerList, setPlayerList] = useState([]);
@@ -57,6 +59,7 @@ function Room(props){
         setMaxUsers(data.max_users);
         setArtist(data.artist);
         setBracketType(data.bracket_type);
+        setSongType(data.song_type);
         setIsHost(data.is_host);
     }
 
@@ -97,7 +100,7 @@ function Room(props){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started ? <SingleElimination artist={artist} songs={[]} round={round}/> : startButton}
+                        {started ? <SingleElimination artist={artist} songs={[]} songType = {songType} round={round}/> : startButton}
                     </div>
                 </div>
             </div>

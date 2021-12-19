@@ -185,7 +185,7 @@ SOCIAL_AUTH_DISCONNECT_PIPELINE = (
 #Spotify Authentication
 SOCIAL_AUTH_SPOTIFY_KEY = SPOT_KEY
 SOCIAL_AUTH_SPOTIFY_SECRET = SPOT_SECRET
-SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-read-private']
+SOCIAL_AUTH_SPOTIFY_SCOPE = ['user-read-email', 'user-read-private', 'playlist-read-collaborative']
 
 LOGIN_REDIRECT_URL = '/bracket'
 LOGOUT_REDIRECT_URL = '/'
