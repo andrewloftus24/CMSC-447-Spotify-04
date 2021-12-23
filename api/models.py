@@ -23,7 +23,7 @@ class Lobby(models.Model):
 
 class User(models.Model):
     host = models.ForeignKey(Lobby, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, default=None)
+    name = models.CharField(max_length=40, default=None)
 
 
 
