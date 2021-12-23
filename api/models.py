@@ -13,7 +13,7 @@ def generate_code():
     return ''.join(random.choice(string.ascii_uppercase) for i in range(6))
 
 class Lobby(models.Model):
-    code = models.CharField(max_length=8, default=generate_code, unique=True)
+    code = models.CharField(max_length=6, default=generate_code, unique=True)
     host = models.CharField(max_length=50, default=None, unique=True, primary_key=True)
     bracket_type = models.CharField(max_length=20, default='single_elim')
     song_type = models.CharField(max_length=10, default='Artist')

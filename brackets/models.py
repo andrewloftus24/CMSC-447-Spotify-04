@@ -51,11 +51,8 @@ class BelongsTo(models.Model):
 
 
 class Track(models.Model):
-    id = models.CharField(max_length=100, primary_key=True)
-    name = models.CharField(max_length=100)
-    popularity = models.IntegerField()
-    URI = models.CharField(max_length=100)
-    URL = models.URLField(max_length=100)
+    room_code = models.CharField(max_length=6, default="ABCDEF")
+    song_name = models.CharField(max_length=50)
 
 class Match(models.Model):
     match_id = models.AutoField(primary_key=True)

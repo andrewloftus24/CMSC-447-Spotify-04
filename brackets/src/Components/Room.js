@@ -12,26 +12,27 @@ function Room(props){
     const csrftoken = GetCookie('csrftoken');
     const [round, setRound] = useState(1);
     const [maxUsers, setMaxUsers] = useState(0);
-    const [artist, setArtist] = useState("");
+    const [filter, setFilter] = useState("");
     const [bracketType, setBracketType] = useState("");
     const [songType, setSongType] = useState("");
     const [playlist, setPlaylist] = useState("");
     const [isHost, setIsHost] = useState(false);
     const [started, setStarted] = useState(false);
-    const [playerList, setPlayerList] = useState([]);
+    const [playerList, setPlayerList] = useState(0);
+    const [songs, setSongs] = useState([]);
 
     useEffect(() => {
         GetRoom();
-    }, [started])
-
-
+        GetSongs();
+    }, [])
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            GetUsers();
-        }, 4000);
-        return () => clearInterval(interval);
+        window.console.log(songs);
     }, [started])
+
+    const handleStartMatch = () => {
+        setStarted(true);
+    }
 
     const handleLeaveRoom = () => {
         ClearVotes();
@@ -41,7 +42,7 @@ function Room(props){
         }
         fetch('/leave/', requestOptions)
             .then(response => {
-                history.push("/bracket")
+                history.push("/")
                 window.location.reload()
             }
             )
@@ -49,18 +50,26 @@ function Room(props){
 
     async function GetUsers(){
         const response = await fetch('/users/' + '?code=' + roomCode);
-        const data = await response.json();
-        setPlayerList(data.users);
+        const data = await response.text();
+        setPlayerList(parseInt(data));
     }
 
     async function GetRoom(){
         const response = await fetch('/get-room/' + '?roomcode=' + roomCode);
         const data = await response.json();
         setMaxUsers(data.max_users);
-        setArtist(data.artist);
+        setFilter(data.artist);
         setBracketType(data.bracket_type);
         setSongType(data.song_type);
         setIsHost(data.is_host);
+    }
+
+    async function GetSongs(){
+        const response = await fetch('/api/gettracks/?' + new URLSearchParams({
+            code: roomCode
+        }));
+        const data = await response.json();
+        setSongs(data);
     }
 
     async function ClearVotes(){
@@ -71,7 +80,7 @@ function Room(props){
 
     let startButton = (
         <div>
-            <button type="button" class="btn btn-primary" onClick={() => setStarted(!started)}>
+            <button type="button" class="btn btn-primary" onClick={() => handleStartMatch()}>
                 Start Match
             </button>
             <br/>
@@ -100,18 +109,10 @@ function Room(props){
                 </div>
                 <div class="row justify-content-md-center">
                     <div class="col-md-12 text-center">
-                        {started ? <SingleElimination artist={artist} songs={[]} songType = {songType} round={round}/> : startButton}
+                        {started ? <SingleElimination artist={filter} songs={songs} songType={songType} round={round}/> : startButton}
                     </div>
                 </div>
             </div>
-    )
-
-    let playerListTitle = (
-        <div class="row justify-content-md-center">
-            <div class="col-md-12">
-                <h5 class="h5 text-center">Player List</h5>
-            </div>
-        </div>
     )
 
     let console = (
@@ -124,16 +125,6 @@ function Room(props){
                         </button>
                     </div>
                 </div>
-                {started ? "" : playerListTitle}
-                {started ? "" : playerList.map((user) => {
-                    return(
-                        <div class="row justify-content-md-center">
-                            <div class="col-md-12">
-                                <h6 class="h6 text-center">{user}</h6>
-                            </div>
-                        </div>
-                    );
-                })}
             </div>
         </div>
     )

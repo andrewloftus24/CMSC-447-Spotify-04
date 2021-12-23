@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import GetCookie from './GetCookie';
 
 function JoinRoom(props){
+    let history = useHistory();
     const [roomCode, setRoomCode] = useState('0');
     const [error, setError] = useState('');
     const csrftoken = GetCookie('csrftoken');
@@ -13,11 +14,12 @@ function JoinRoom(props){
         }
     }, [roomCode])
 
-    const handleRoomBackButton = (event) => {
-        props.history.push('/bracket');
-    }
+    useEffect(() => {
+
+    }, [error])
 
     const handleRoomJoinButton = () => {
+        window.console.log(roomCode);
         const requestOptions = {
             method: 'POST',
             headers: {"Content-type" : "application/json", 'X-CSRFToken': csrftoken},
@@ -28,12 +30,12 @@ function JoinRoom(props){
         fetch('/join-room/', requestOptions)
         .then((response) => {
             if (response.ok) {
-                props.history.push(`/room/${roomCode}`)
+                history.push(`/room/${roomCode}`)
             } else{
                 setError("Room not found.")
             }
 
-        }).then((data) => console.log(data))
+        }).then((data) => setError("Room not found."))
         .catch((error) => {
             console.log(error)
         })
@@ -42,26 +44,20 @@ function JoinRoom(props){
     return (
         <div class="container">
             <div class="row justify-content-md-center">
-                <div class="col-md-12">
-                    <br/>
-                    <br/>
-                    <h3 class="h3 text-center">Join Room</h3>
-                    <br/>
-                    <br/>
-                </div>
-            </div>
-            <div class="row justify-content-md-center">
-                <div class="col-md-12">
+                <div class="col-md-8 d-flex justify-content-center">
                     <input type="text" class="form-control" placeholder="Enter Room Code" aria-label="Enter Room Code" aria-describedby="basic-addon2" id="roomCode" />
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-5 justify-content-md-right">
+            <br />
+            <div class="row justify-content-md-center">
+                <div class="col-md-4 d-flex justify-content-center">
                     <button type="button" class="btn btn-primary" onClick={() => setRoomCode(document.getElementById('roomCode').value)}>Enter Room</button>
                 </div>
-                <div class="col-md-2" />
-                <div class="col-md-5 justify-content-md-left">
-                     <button type="button" class="btn btn-primary" onClick={handleRoomBackButton}>Go Back</button>
+            </div>
+            <br />
+            <div class="row justify-content-md-center">
+                <div class="col-md-8 d-flex justify-content-center">
+                    {error}
                 </div>
             </div>
         </div>
