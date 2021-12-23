@@ -12,7 +12,7 @@ import json
 
 from rest_framework.views import APIView
 
-from brackets.models import Votes
+from brackets.models import Votes, Track
 from spotifytournament.credentials import SPOT_SECRET, SPOT_KEY
 
 from rest_framework.decorators import api_view
@@ -34,8 +34,20 @@ def logout(request):
     django.contrib.auth.logout(request)
     return redirect('/')
 
-def getUser(request):
-    return HttpResponse(request.session.session_key)
+def getUserAuthenticated(request):
+    return HttpResponse(request.user.is_authenticated)
+
+def getUserInformation(request):
+    scope = 'user-top-read'
+    response = HttpResponse()
+
+    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id=SPOT_KEY,
+                                                           client_secret=SPOT_SECRET)
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+
+    user = sp.user(request.user.username)
+
+    return HttpResponse(user['images'][0]['url'])
 
 def top50(request):
     scope = 'user-top-read'
@@ -61,6 +73,7 @@ def topTracks(request):
                                                            client_secret=SPOT_SECRET)
     sp = spotipy.Spotify(auth_manager=auth_manager)
     name = request.GET.get('artist', None)
+    room_code = request.GET.get('code')
     if name is not None:
         # Get the first artist from results, take their uri
         results = sp.search(q='artist:' + name, type='artist')
@@ -82,11 +95,9 @@ def topTracks(request):
             index = tracks[x].index('-')
             tracks[x] = tracks[x][0:index-1]
 
-    response = json.dumps(tracks)
-    # host_name is the session_key for the user
-    # will use for host name and bracket name in DB, as host can only have one bracket at a time
+    status = uploadTracks(request, tracks, room_code)
 
-    return HttpResponse(response)
+    return HttpResponse(status)
 
 @api_view(['GET', 'POST'])
 def getPlaylistNames(request):
@@ -115,6 +126,8 @@ def getPlaylistItems(request):
     sp = spotipy.Spotify(auth_manager=auth_manager)
     # Search that uri for the top 8 songs for the bracket, stored as name in tracks
     playlist = request.GET.get('artist')
+    room_code = request.GET.get('code')
+    number_tracks = int(request.GET.get('num', 8))
     playlist_id = 0
     playlist_dict = {'tracks': None}
     playlist_list = []
@@ -127,11 +140,72 @@ def getPlaylistItems(request):
 
         tracks = sp.playlist_tracks(playlist_id=playlist_id)
 
-        for x in range(8):
-           playlist_list.append(tracks['items'][x]['track']['name'])
+        for x in range(number_tracks):
+            ind = random.randint(x, len(tracks['items'])-1)
+            while tracks['items'][ind]['track']['name'] in playlist_list:
+                ind = random.randint(x, len(tracks['items']))
+            playlist_list.append(tracks['items'][ind]['track']['name'])
 
-        response = json.dumps(playlist_list)
-        return HttpResponse(response)
+        status = uploadTracks(request, playlist_list, room_code)
+
+        return HttpResponse(status)
+
+def getAlbumTracks(request):
+    # Setups
+    scope = 'user-top-read'
+    response = HttpResponse()
+    auth_manager = spotipy.oauth2.SpotifyClientCredentials(client_id=SPOT_KEY,
+                                                           client_secret=SPOT_SECRET)
+    sp = spotipy.Spotify(auth_manager=auth_manager)
+    name = request.GET.get('artist', None)
+    room_code = request.GET.get('code')
+    num_tracks = int(request.GET.get('num', 8))
+    if name is not None:
+        # Get the first artist from results, take their uri
+        results = sp.search(q='album:' + name, type='album')
+        uri = results['albums']['items'][0]['id']
+        # Search that uri for the top 8 songs for the bracket, stored as name in tracks
+        results = sp.album_tracks(uri)
+        #return HttpResponse(results['items'][0]['name'])
+        tracks = []
+        number_tracks = len(results['items'])
+        if number_tracks < num_tracks:
+            for x in range(num_tracks):
+                if(x > number_tracks - 1):
+                    tracks.append("Free Vote")
+                else:
+                    tracks.append(results['items'][x]['name'])
+        else:
+            for x in range(num_tracks):
+                ind = random.randint(x, number_tracks-1)
+                while results['items'][ind]['name'] in tracks:
+                    ind = random.randint(x, number_tracks-1)
+                tracks.append(results['items'][ind]['name'])
+
+        status = uploadTracks(request, tracks, room_code)
+
+        return HttpResponse(status)
+
+def uploadTracks(request, data, code):
+    deleteTracks(request, code)
+    for i in range(len(data)):
+        track = Track(room_code=code, song_name=data[i])
+        track.save()
+    return "Uploaded"
+
+def getTracks(request):
+    code = request.GET.get('code')
+    tracks = Track.objects.filter(room_code=code)
+    track_list = []
+    for i in range(len(tracks)):
+        track_list.append(tracks[i].song_name)
+
+    response = json.dumps(track_list)
+
+    return HttpResponse(response)
+
+def deleteTracks(request, code):
+    Track.objects.filter(room_code=code).delete()
 
 @api_view(['GET', 'POST'])
 def startVotes(request):

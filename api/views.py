@@ -79,7 +79,7 @@ class CreateRoom(APIView):
                 self.request.session['room_code'] = match.code
                 return HttpResponse(JsonResponse(GetRoomSerializer(match).data), status=status.HTTP_200_OK)
             else:
-                match = Lobby(host=room_host, bracket_type=bracket_type, artist=artist, max_users=max_users)
+                match = Lobby(host=room_host, bracket_type=bracket_type, song_type=song_type, artist=artist, max_users=max_users)
                 match.save()
                 User.objects.all().delete()
                 users = User.objects.create(host=match, name=room_host)
@@ -108,12 +108,7 @@ class GetPlayerList(APIView):
             match = Lobby.objects.filter(code=code)
             if match.exists():
                 users = User.objects.filter(host=match[0].host)
-                userDict = {'users': None}
-                userList = []
-                for user in users:
-                    userList.append(user.name)
-                userDict['users'] = userList
-                return HttpResponse(JsonResponse(userDict))
+                return HttpResponse(len(users))
 
 
 class LeaveRoom(APIView):

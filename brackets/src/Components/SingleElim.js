@@ -6,7 +6,6 @@ function SingleElimination(props){
     const artist = props.artist;
     const [songs, setSongs] = useState(props.songs);
     const [user, setUser] = useState("");
-    const [message, setMessage] = useState("");
     const [round, setRound] = useState(props.round);
     const [votesList, setVotesList] = useState([]);
     const [submitted, setSubmitted] = useState(false);
@@ -16,12 +15,6 @@ function SingleElimination(props){
     useEffect(() => {
         if(round === 1){
             setEnd(8);
-            if(props.songType === "Artist"){
-                GrabSongs();
-            }
-            else if(props.songType === "Playlist"){
-                GrabPlaylistItems();
-            }
         }
         else if(round === 2){
             setStart(8);
@@ -38,32 +31,11 @@ function SingleElimination(props){
             }
             setVotesList(votes);
         }
-    }, [message, submitted]);
+    }, []);
 
-    async function GrabSongs() {
-        const response = await fetch('/api/toptracks/?' + new URLSearchParams({
-            artist: artist,
-            num: 8,
-        }));
-        const data = await response.json();
-        let w = data.tracks;
-        for(var i = 8; i < 15; i++){
-            w.push(" ");
-        }
-        setSongs(w);
-    }
+    useEffect(() => {
 
-    async function GrabPlaylistItems(){
-        const response = await fetch('/api/playlisttracks/?' + new URLSearchParams({
-            artist: artist
-        }));
-        const data = await response.json();
-        let w = [...data];
-        for(var i = 8; i < 15; i++){
-            w.push(" ");
-        }
-        setSongs(w);
-    }
+    }, [submitted])
 
     const handleVotes = (index) => {
         let votes = [...votesList];
@@ -75,20 +47,12 @@ function SingleElimination(props){
         }
         votes[index] = 1;
 
-        let msg = "You voted for " + songs[index+start] + "!";
-        setMessage(msg);
         setVotesList(votes);
     }
 
     const handleSubmit = () => {
         setSubmitted(true);
     }
-
-    let displayMessage = (
-        <div>
-            <h5 class="h5 text-center">{message}</h5>
-        </div>
-    )
 
     let winnerMessage = (
         <div>
@@ -113,8 +77,6 @@ function SingleElimination(props){
         <div class="tournament-container">
             <h1 class="h3 text-center"><b>Single Elimination</b></h1>
             <h3 class="h4 text-center"><b>{artist}</b></h3>
-            <br />
-            <br />
             <br />
             <div class="tournament-headers">
                 <h4>{round === 1 ? <b>Stage 1</b> : "Stage 1"}</h4>
@@ -166,11 +128,7 @@ function SingleElimination(props){
                     <li class="team-item">{songs[14]}</li>
                 </ul>
             </div>
-            <br />
-            {round === 4 ? winnerMessage : displayMessage}
-            <br />
-            <br />
-            {round === 4 ? "" : submitButton}
+            {round === 4 ? winnerMessage : submitButton}
         </div>
     )
 
