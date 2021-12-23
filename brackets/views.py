@@ -187,7 +187,7 @@ def getAlbumTracks(request):
         return HttpResponse(status)
 
 def uploadTracks(request, data, code):
-    deleteTracks(request, code)
+    #deleteTracks(request, code)
     for i in range(len(data)):
         track = Track(room_code=code, song_name=data[i])
         track.save()
